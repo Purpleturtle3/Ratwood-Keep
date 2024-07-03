@@ -34,6 +34,7 @@
 			neck = /obj/item/clothing/neck/roguetown/psicross/astrata
 			wrists = /obj/item/clothing/wrists/roguetown/wrappings
 			shoes = /obj/item/clothing/shoes/roguetown/sandals
+            pants = /obj/item/clothing/under/roguetown/tights
 			armor = /obj/item/clothing/suit/roguetown/shirt/robe/astrata
 		if(/datum/patron/divine/noc) //Nocalytes aren't real. Play Cleric.
 			head = /obj/item/clothing/head/roguetown/roguehood/nochood
