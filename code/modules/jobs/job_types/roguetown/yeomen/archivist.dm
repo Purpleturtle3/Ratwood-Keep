@@ -100,7 +100,8 @@
     /datum/skill/craft/carpentry,
     /datum/skill/craft/masonry,
     /datum/skill/craft/cooking,
-    /datum/skill/craft/engineering
+    /datum/skill/craft/engineering,
+    /datum/skill/craft/hunting
     )
 	for(var/i = 1, i <= skill_choices.len, i++)
 		choices["[skill_choices[i].name]"] = skill_choices[i]
