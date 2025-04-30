@@ -29,7 +29,7 @@
 	owner.add_stress(/datum/stressevent/goodsnack)
 	if(owner.has_status_effect(/datum/status_effect/buff/greatsnackbuff))
 		owner.remove_status_effect(/datum/status_effect/buff/snackbuff)
-	
+
 
 /datum/status_effect/buff/greatsnackbuff
 	id = "greatsnack"
@@ -56,7 +56,7 @@
 
 /atom/movable/screen/alert/status_effect/buff/mealbuff
 	name = "Good meal"
-	desc = "A meal a day keeps the barber away, or at least it makes it slighly easier." 
+	desc = "A meal a day keeps the barber away, or at least it makes it slightly easier."
 	icon_state = "foodbuff"
 
 /datum/status_effect/buff/mealbuff/on_apply()
@@ -304,6 +304,45 @@
 	alert_type = /atom/movable/screen/alert/status_effect/buff/haste
 	effectedstats = list("speed" = 3)
 	duration = 1.5 MINUTES
+
+/atom/movable/screen/alert/status_effect/buff/enlarge
+	name = "Enlarged"
+	desc = "I am magically enlarged."
+	icon_state = "buff"
+
+/datum/status_effect/buff/enlarge
+	id = "enlarge"
+	alert_type = /atom/movable/screen/alert/status_effect/buff/enlarge
+	effectedstats = list("strength" = 2,"constitution" = 2, "speed" = -2)
+	duration = 1.5 MINUTES
+
+/datum/status_effect/buff/enlarge/on_apply()
+	. = ..()
+	if(!(isseelie(owner)))
+		to_chat(owner, span_warning("I feel myself growing leaps and bounds!"))
+		ADD_TRAIT(owner, TRAIT_DEATHBYSNUSNU, MAGIC_TRAIT)
+		owner.transform = owner.transform.Scale(1.25, 1.25)
+		owner.transform = owner.transform.Translate(0, (0.25 * 16))
+		owner.mob_size += 1
+		owner.update_transform()
+	else
+		to_chat(owner, span_warning("I can feel arcyne magick supplement my tiny frame!"))
+		
+	
+
+
+/datum/status_effect/buff/enlarge/on_remove()
+	. = ..()   
+	if(!(isseelie(owner)))
+		to_chat(owner, span_warning("I feel myself shrinking again.."))
+		REMOVE_TRAIT(owner, TRAIT_DEATHBYSNUSNU, MAGIC_TRAIT) 
+		owner.transform = owner.transform.Translate(0, -(0.25 * 16))
+		owner.transform = owner.transform.Scale(1/1.25, 1/1.25)
+		owner.mob_size -= 1  
+		owner.update_transform()
+	else
+		to_chat(owner, span_warning("I can feel the strengthening magicks fade from my small body.."))
+	
 
 /datum/status_effect/buff/seelie_drugs
 	id = "seelie drugs"
@@ -606,3 +645,52 @@
     name = "Royal Flesh"
     desc = "The flesh of royalty, granting an increase in luck."
     icon_state = "meatsteak"
+
+/atom/movable/screen/alert/status_effect/buff/healing
+	name = "Healing Miracle"
+	desc = "Divine intervention relieves me of my ailments."
+	icon_state = "buff"
+
+/datum/status_effect/buff/healing
+	id = "healing"
+	alert_type = /atom/movable/screen/alert/status_effect/buff/healing
+	duration = 10 SECONDS
+	examine_text = "They are bathed in a restorative aura!"
+	var/healing_on_tick = 1
+
+/datum/status_effect/buff/healing/on_creation(mob/living/new_owner, new_healing_on_tick)
+	healing_on_tick = new_healing_on_tick
+	return ..()
+
+/datum/status_effect/buff/healing/tick()
+	var/obj/effect/temp_visual/heal_rogue/H = new /obj/effect/temp_visual/heal_rogue(get_turf(owner))
+	H.color = "#FFD700"
+	if(owner.blood_volume < BLOOD_VOLUME_NORMAL)
+		owner.blood_volume = min(owner.blood_volume+10, BLOOD_VOLUME_NORMAL)
+	if(length(owner.get_wounds()))
+		owner.heal_wounds(healing_on_tick)
+		owner.update_damage_overlays()
+	owner.adjustBruteLoss(-healing_on_tick, 0)
+	owner.adjustFireLoss(-healing_on_tick, 0)
+	owner.adjustOxyLoss(-healing_on_tick, 0)
+	owner.adjustToxLoss(-healing_on_tick, 0)
+	owner.adjustOrganLoss(ORGAN_SLOT_BRAIN, -healing_on_tick)
+	owner.adjustCloneLoss(-healing_on_tick, 0)
+
+/datum/status_effect/buff/vitae
+	id = "druqks"
+	alert_type = /atom/movable/screen/alert/status_effect/buff/vitae
+	effectedstats = list("fortune" = 2)
+	duration = 10 SECONDS
+
+/datum/status_effect/buff/vitae/on_apply()
+	. = ..()
+	owner.add_stress(/datum/stressevent/high)
+
+/datum/status_effect/buff/vitae/on_remove()
+	owner.remove_stress(/datum/stressevent/high)
+	. = ..()
+
+/atom/movable/screen/alert/status_effect/buff/vitae
+	name = "Invigorated"
+	desc = "I have supped on the finest of delicacies: life!"

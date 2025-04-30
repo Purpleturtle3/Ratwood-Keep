@@ -170,7 +170,7 @@
 
 	if(user.sexcon && user.sexcon.target == src && !isnull(user.sexcon.current_action))
 		switch(user.sexcon.current_action)
-			if(/datum/sex_action/blowjob || /datum/sex_action/crotch_nuzzle || /datum/sex_action/cunnilingus || /datum/sex_action/rimming || /datum/sex_action/suck_balls)
+			if(/datum/sex_action/blowjob, /datum/sex_action/crotch_nuzzle, /datum/sex_action/cunnilingus, /datum/sex_action/rimming, /datum/sex_action/suck_balls)
 				dam2do *= 2 //Vrell - biting their junk hurts more
 				def_zone = BODY_ZONE_PRECISE_GROIN
 				do_bound_check = FALSE
@@ -180,7 +180,7 @@
 				do_bound_check = FALSE
 	if(sexcon && sexcon.target == user && !isnull(sexcon.current_action))
 		switch(sexcon.current_action)
-			if(/datum/sex_action/throat_sex || /datum/sex_action/force_blowjob || /datum/sex_action/force_crotch_nuzzle || /datum/sex_action/force_cunnilingus || /datum/sex_action/facesitting || /datum/sex_action/force_rimming)
+			if(/datum/sex_action/throat_sex, /datum/sex_action/force_blowjob, /datum/sex_action/force_crotch_nuzzle, /datum/sex_action/force_cunnilingus, /datum/sex_action/facesitting, /datum/sex_action/force_rimming)
 				dam2do *= 2 //Vrell - biting their junk hurts more
 				def_zone = BODY_ZONE_PRECISE_GROIN
 				do_bound_check = FALSE
@@ -206,15 +206,9 @@
 		if(!lying_attack_check(user))
 			return FALSE
 	
-	if(isseelie(src))
-		if(user.patron.type == /datum/patron/inhumen/graggar)
-			if(user.pulling == src)
-				if(user.grab_state == GRAB_AGGRESSIVE)
-					visible_message(span_danger("[user] is putting [src]'s head in their mouth!"), \
-									span_userdanger("[user] is putting my head in their mouth!"))
-					if(do_after(user, 8 SECONDS, target = src))
-						var/obj/item/bodypart/head/head = src.get_bodypart("head")
-						head.dismember()
+	// Handle species-specific bite effects.
+	if(dna?.species?.on_bitten(src, user))
+		return
 
 	var/obj/item/bodypart/affecting = get_bodypart(check_zone(def_zone))
 	if(!affecting)
@@ -283,10 +277,8 @@
 	if(!mmb_intent)
 		if(!A.Adjacent(src))
 			return
-		if(isseelie(A) && !(isseelie(src)))
-			var/mob/living/carbon/human/target = A
-			if(target.pulledby == src)
-				target.dna.species.on_wing_removal(A, src)
+		var/mob/living/carbon/human/target = A
+		if(ishuman(target) && target.dna.species.on_middle_click(A, src))
 			return
 		A.MiddleClick(src, params)
 	else
@@ -470,7 +462,7 @@
 											stealpos.Add(V.get_item_by_slot(SLOT_BELT_R))
 										if (V.get_item_by_slot(SLOT_BELT_L))
 											stealpos.Add(V.get_item_by_slot(SLOT_BELT_L))
-									if("r_hand" || "l_hand")
+									if("r_hand", "l_hand")
 										if (V.get_item_by_slot(SLOT_RING))
 											stealpos.Add(V.get_item_by_slot(SLOT_RING))
 								if (length(stealpos) > 0)
