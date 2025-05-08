@@ -96,11 +96,10 @@
 /mob/living/proc/check_projectile_wounding(obj/projectile/P, def_zone)
 	return simple_woundcritroll(P.woundclass, P.damage, null, def_zone, crit_message = TRUE)
 
-/mob/living/proc/check_projectile_embed(obj/projectile/P, def_zone)
-	if(!prob(P.embedchance) || !P.dropped)
-		return FALSE
-	simple_add_embedded_object(P.dropped, crit_message = TRUE)
-	return TRUE
+/mob/living/simple_animal/check_projectile_embed(obj/projectile/P, def_zone)
+    if(can_embed(P)) // Optional check
+        return prob(P.embedchance)
+    return FALSE
 
 /obj/item/proc/get_volume_by_throwforce_and_or_w_class()
 	if(throwforce && w_class)
