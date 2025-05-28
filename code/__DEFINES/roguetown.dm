@@ -167,8 +167,6 @@
 	/datum/species/goblin/moon,\
 )
 
-
-
 #define ALL_CLERIC_PATRONS list(\
 	/datum/patron/divine/astrata,\
 	/datum/patron/divine/noc,\
@@ -319,6 +317,7 @@ GLOBAL_LIST_EMPTY(job_respawn_delays)
 #define CTAG_TOWNER			"CAT_TOWNER"		// Villager class - Villagers can use it
 #define CTAG_MERCENARY		"CAT_MERCENARY"		// Mercs
 #define CTAG_HENCH			"CAT_HENCH"			// Whitevein Guards
+#define CTAG_WENCH			"CAT_WENCH"			// Whitevein workers
 
 //Courtiers
 #define CTAG_SERVANT		"CAT_SERVANT"		// Maids and butlers
@@ -340,7 +339,7 @@ GLOBAL_LIST_EMPTY(job_respawn_delays)
 
 //Other
 #define CTAG_REFUGEE		"CAT_REFUGEE"		// Refugee classes
-
+#define CTAG_ADVENTURER		"CAT_ADVENTURER"		// Adventurer classes
 /*
 	Defines for the triumph buy datum categories
 */

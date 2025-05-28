@@ -371,19 +371,57 @@
 /turf/open/water/river/Entered(atom/movable/AM, atom/oldLoc)
 	. = ..()
 	if(!river_processing)
-		river_processing = addtimer(CALLBACK(src, PROC_REF(process_river)), 5, TIMER_STOPPABLE|TIMER_LOOP)
-
-/turf/open/water/river/proc/process_river()
-	if(river_processing)
-		deltimer(river_processing)
-		river_processing = null
-	for(var/atom/movable/A in contents)
 		for(var/obj/structure/S in src)
 			if(S.obj_flags & BLOCK_Z_OUT_DOWN)
 				return
+		river_processing = addtimer(CALLBACK(src, PROC_REF(process_river)), 0.5 SECONDS, TIMER_STOPPABLE)
+
+/turf/open/water/river/proc/process_river()
+	river_processing = null
+	for(var/obj/structure/S in src)
+		if(S.obj_flags & BLOCK_Z_OUT_DOWN)
+			return
+	for(var/atom/movable/A in contents)
 		if((A.loc == src) && A.has_gravity())
 			if(ismob(A))
 				var/mob/the_mob = A
 				if(the_mob.is_floor_hazard_immune())
 					continue // floating seelie, jumping, etc
 			A.ConveyorMove(dir)
+
+/turf/open/water/sea/thermalwater //heals u and has better chance to catch rare fish IT SUPPOSED TO BE BOG ONLY BECAUSE GIVES +25% CHANCE TO CATCH RARE FISH
+	name = "healing hot spring"
+	desc = "A warm spring with gentle ripples. Standing here soothes your body."
+	icon = 'icons/turf/roguefloor.dmi'
+	icon_state = "together"
+	water_color = "#23b9df"
+	water_level = 2
+	wash_in = TRUE
+	water_reagent = /datum/reagent/water
+	var/heal_interval = 5 SECONDS
+	var/heal_amount = 20
+	var/last_heal = 0
+
+/turf/open/water/sea/thermalwater/Initialize()  // I REPEAT ITS BOG ONLY YOU RRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+	. = ..()
+	START_PROCESSING(SSobj, src)
+
+/turf/open/water/sea/thermalwater/process()
+	if(world.time < last_heal + heal_interval)
+		return
+
+	for(var/mob/living/carbon/M in src)
+		if(M.stat == DEAD) continue
+
+		if(M.getBruteLoss())
+			M.adjustBruteLoss(-heal_amount)
+		if(M.getFireLoss())
+			M.adjustFireLoss(-heal_amount)
+		if(M.getToxLoss())
+			M.adjustToxLoss(-heal_amount)
+		if(M.getOxyLoss())
+			M.adjustOxyLoss(-heal_amount*2)
+
+		M.visible_message(span_notice("[M] looks a bit better after soaking in the spring."))
+
+	last_heal = world.time
